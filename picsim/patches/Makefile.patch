@@ -1,0 +1,23 @@
+diff --git a/Makefile b/Makefile
+index b73394e..1a60c17 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,13 +1,15 @@
+-CC= gcc
++# CC= gcc
++CC= emcc
+ RM= rm -f
+-AR= ar
++# AR= ar
++AR= emar
+ LN= ln -sfn
+ CP= cp
+ MKDIR = mkdir -p
+ 
+ LIBVER=0.6
+ LIBMAINVER=0
+-FLAGS= -Wall -O3 -fomit-frame-pointer -fpic
++FLAGS= -Werror -Wno-error=unused-result -Wall -O3 -fomit-frame-pointer -fpic
+ 
+ prefix = /usr
+ exec_prefix = ${prefix}
