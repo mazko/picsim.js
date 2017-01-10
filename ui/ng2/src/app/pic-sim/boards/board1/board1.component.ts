@@ -10,6 +10,7 @@ const SVG_SWITCH_OFF = 'matrix(.078133 0 0 -.078133 70.84 128)';
 const DEFAULT_RED = '#050000';
 const DEFAULT_GREEN = '#000500';
 const DEFAULT_YELLOW = '#050500';
+const DEFAULT_SEGMENT = '#FFF';
 
 
 @Component({
@@ -46,52 +47,58 @@ export class Board1Component extends AbstractBoard implements OnInit {
   private readonly _display = {
     idx: -1,
     segments: {
-      A: DEFAULT_RED, B: DEFAULT_RED, C: DEFAULT_RED,
-      D: DEFAULT_RED, E: DEFAULT_RED, F: DEFAULT_RED,
-      G: DEFAULT_RED
+      A: DEFAULT_SEGMENT, B: DEFAULT_SEGMENT, C: DEFAULT_SEGMENT,
+      D: DEFAULT_SEGMENT, E: DEFAULT_SEGMENT, F: DEFAULT_SEGMENT,
+      G: DEFAULT_SEGMENT, DOT: DEFAULT_SEGMENT
     }
   };
 
   getSegmentA(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.A
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentB(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.B
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentC(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.C
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentD(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.D
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentE(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.E
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentF(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.F
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
   }
 
   getSegmentG(idx: number): string {
     return idx === this._display.idx
       ? this._display.segments.G
-      : DEFAULT_RED;
+      : DEFAULT_SEGMENT;
+  }
+
+  getSegmentDot(idx: number): string {
+    return idx === this._display.idx
+      ? this._display.segments.DOT
+      : DEFAULT_SEGMENT;
   }
 
   ngOnInit() {
@@ -211,15 +218,14 @@ export class Board1Component extends AbstractBoard implements OnInit {
       this.RB7_RGB = `rgb(${PORTB_OUT[7]},0,0)`;
     } else {
       // 7-segment
-      this._clear_display_segments();
-      this._display.segments.G = `rgb(${PORTB_OUT[0]},0,0)`;
-      this._display.segments.F = `rgb(${PORTB_OUT[1]},0,0)`;
-      this._display.segments.A = `rgb(${PORTB_OUT[2]},0,0)`;
-      this._display.segments.B = `rgb(${PORTB_OUT[3]},0,0)`;
-      this._display.segments.C = `rgb(${PORTB_OUT[5]},0,0)`;
-      this._display.segments.D = `rgb(${PORTB_OUT[6]},0,0)`;
-      this._display.segments.E = `rgb(${PORTB_OUT[7]},0,0)`;
-      this._display.idx = +!PORTB_OUT[4]; // 0 or 1
+      this._display.segments.G = `rgb(255,${255 - PORTB_OUT[0]},${255 - PORTB_OUT[0]})`;
+      this._display.segments.F = `rgb(255,${255 - PORTB_OUT[1]},${255 - PORTB_OUT[1]})`;
+      this._display.segments.A = `rgb(255,${255 - PORTB_OUT[2]},${255 - PORTB_OUT[2]})`;
+      this._display.segments.B = `rgb(255,${255 - PORTB_OUT[3]},${255 - PORTB_OUT[3]})`;
+      this._display.segments.C = `rgb(255,${255 - PORTB_OUT[5]},${255 - PORTB_OUT[5]})`;
+      this._display.segments.D = `rgb(255,${255 - PORTB_OUT[6]},${255 - PORTB_OUT[6]})`;
+      this._display.segments.E = `rgb(255,${255 - PORTB_OUT[7]},${255 - PORTB_OUT[7]})`;
+      this._display.idx = +(PORTB_OUT[4] < 128); // 0 or 1
     }
 
     // console.log(PORTA_OUT)
