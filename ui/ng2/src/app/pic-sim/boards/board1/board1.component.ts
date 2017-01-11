@@ -13,6 +13,23 @@ const DEFAULT_YELLOW = '#050500';
 const DEFAULT_SEGMENT = '#FFF';
 
 
+class Display7 {
+  A: string;
+  B: string;
+  C: string;
+  D: string;
+  E: string;
+  F: string;
+  G: string;
+  DOT: string;
+
+  clear() {
+    this.A = this.B = this.C = this.D = this.E =
+    this.F = this.G = this.DOT = DEFAULT_SEGMENT;
+  }
+}
+
+
 @Component({
   selector: 'app-board1',
   templateUrl: './board1.component.html',
@@ -40,65 +57,80 @@ export class Board1Component extends AbstractBoard implements OnInit {
   RA3_IN: boolean;
   RA4_IN: boolean;
 
-  private _switchState = true;
+  private _switchStateIsOnLeds = true;
 
   actuator_transform = SVG_SWITCH_ON;
 
-  private readonly _display = {
-    idx: -1,
-    segments: {
-      A: DEFAULT_SEGMENT, B: DEFAULT_SEGMENT, C: DEFAULT_SEGMENT,
-      D: DEFAULT_SEGMENT, E: DEFAULT_SEGMENT, F: DEFAULT_SEGMENT,
-      G: DEFAULT_SEGMENT, DOT: DEFAULT_SEGMENT
-    }
+  private readonly _display: {left, right: Display7} = {
+    left: new Display7(), right: new Display7()
   };
 
-  getSegmentA(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.A
-      : DEFAULT_SEGMENT;
+  // left seven segments display
+
+  get segment1A(): string {
+    return this._display.left.A;
   }
 
-  getSegmentB(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.B
-      : DEFAULT_SEGMENT;
+  get segment1B(): string {
+    return this._display.left.B;
   }
 
-  getSegmentC(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.C
-      : DEFAULT_SEGMENT;
+  get segment1C(): string {
+    return this._display.left.C;
   }
 
-  getSegmentD(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.D
-      : DEFAULT_SEGMENT;
+  get segment1D(): string {
+    return this._display.left.D;
   }
 
-  getSegmentE(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.E
-      : DEFAULT_SEGMENT;
+  get segment1E(): string {
+    return this._display.left.E;
   }
 
-  getSegmentF(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.F
-      : DEFAULT_SEGMENT;
+  get segment1F(): string {
+    return this._display.left.F;
   }
 
-  getSegmentG(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.G
-      : DEFAULT_SEGMENT;
+  get segment1G(): string {
+    return this._display.left.G;
   }
 
-  getSegmentDot(idx: number): string {
-    return idx === this._display.idx
-      ? this._display.segments.DOT
-      : DEFAULT_SEGMENT;
+  get segment1Dot(): string {
+    return this._display.left.DOT;
+  }
+
+  // right seven segments display
+
+  get segment2A(): string {
+    return this._display.right.A;
+  }
+
+  get segment2B(): string {
+    return this._display.right.B;
+  }
+
+  get segment2C(): string {
+    return this._display.right.C;
+  }
+
+  get segment2D(): string {
+    return this._display.right.D;
+  }
+
+  get segment2E(): string {
+    return this._display.right.E;
+  }
+
+  get segment2F(): string {
+    return this._display.right.F;
+  }
+
+  get segment2G(): string {
+    return this._display.right.G;
+  }
+
+  get segment2Dot(): string {
+    return this._display.right.DOT;
   }
 
   ngOnInit() {
@@ -119,7 +151,9 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   private _clear_display_segments() {
-    this._display.idx = -1;
+    for (let display of [this._display.left, this._display.right]) {
+      display.clear();
+    }
   }
 
   private _reset_board_ui() {
@@ -133,12 +167,12 @@ export class Board1Component extends AbstractBoard implements OnInit {
     this.btn_mouseup();
   }
 
-  private _normalize_port(port: number[], PROBES: number) {
-    for (let i = 0; i < port.length; i++) {
-      port[i] = Math.ceil(port[i] * 0xFF / PROBES);
-      if (port[i] > 0xFF) {
-        console.log(`ERROR: wrong math ${port[i]} !`);
-        port[i] = 0xFF;
+  private _normalize_probes(values: number[], PROBES: number) {
+    for (let i = 0; i < values.length; i++) {
+      values[i] = Math.ceil(values[i] * 0xFF / PROBES);
+      if (values[i] > 0xFF) {
+        console.log(`ERROR: wrong math ${values[i]} !`);
+        values[i] = 0xFF;
       }
     }
   }
@@ -149,7 +183,9 @@ export class Board1Component extends AbstractBoard implements OnInit {
           PROBES = 250,
           STEPS_BETWEEN_PROBES = steps / PROBES,
           PORTB_OUT = Array<number>(8).fill(0),
-          PORTA_OUT = Array<number>(4).fill(0);
+          PORTA_OUT = Array<number>(4).fill(0),
+          SEGMENTS_1 = Array<number>(7).fill(0),
+          SEGMENTS_2 = [...SEGMENTS_1];
 
     if (STEPS_BETWEEN_PROBES % 1) {
       throw new Error('PROBES have Fractional part ?');
@@ -159,9 +195,23 @@ export class Board1Component extends AbstractBoard implements OnInit {
       sim.step();
       // get_pins same as in doc DS40044E
       if (!(step % STEPS_BETWEEN_PROBES)) {
-        // PORTB pins 6..13
-        for (let i = 0; i < PORTB_OUT.length; i++) {
-          PORTB_OUT[i] += sim.get_pin(i + 6);
+
+        if (this._switchStateIsOnLeds) {
+          // PORTB pins 6..13
+          for (let i = 0; i < PORTB_OUT.length; i++) {
+            PORTB_OUT[i] += sim.get_pin(i + 6);
+          }
+        } else {
+          // RB4 select current display7 index  
+          const display_idx = sim.get_pin(10 /* 6 + 4 */);
+          for (let i = 0; i < SEGMENTS_1.length; i++) {
+            const value = sim.get_pin(i < 4 ? i + 6 : i + 7);
+            if (display_idx) {
+              SEGMENTS_2[i] += value;
+            } else {
+              SEGMENTS_1[i] += value;
+            }
+          }
         }
 
         // PORTA leds pins 17,18,1,2
@@ -201,12 +251,14 @@ export class Board1Component extends AbstractBoard implements OnInit {
     }
 
     // normalize
-    this._normalize_port(PORTB_OUT, PROBES);
-    this._normalize_port(PORTA_OUT, PROBES);
+    this._normalize_probes(PORTB_OUT, PROBES);
+    this._normalize_probes(PORTA_OUT, PROBES);
+    this._normalize_probes(SEGMENTS_1, PROBES);
+    this._normalize_probes(SEGMENTS_2, PROBES);
 
     // console.log(PORTB_OUT)
 
-    if (this._switchState) {
+    if (this._switchStateIsOnLeds) {
       // leds
       this.RB0_RGB = `rgb(${PORTB_OUT[0]},0,0)`;
       this.RB1_RGB = `rgb(${PORTB_OUT[1]},0,0)`;
@@ -218,14 +270,21 @@ export class Board1Component extends AbstractBoard implements OnInit {
       this.RB7_RGB = `rgb(${PORTB_OUT[7]},0,0)`;
     } else {
       // 7-segment
-      this._display.segments.G = `rgb(255,${255 - PORTB_OUT[0]},${255 - PORTB_OUT[0]})`;
-      this._display.segments.F = `rgb(255,${255 - PORTB_OUT[1]},${255 - PORTB_OUT[1]})`;
-      this._display.segments.A = `rgb(255,${255 - PORTB_OUT[2]},${255 - PORTB_OUT[2]})`;
-      this._display.segments.B = `rgb(255,${255 - PORTB_OUT[3]},${255 - PORTB_OUT[3]})`;
-      this._display.segments.C = `rgb(255,${255 - PORTB_OUT[5]},${255 - PORTB_OUT[5]})`;
-      this._display.segments.D = `rgb(255,${255 - PORTB_OUT[6]},${255 - PORTB_OUT[6]})`;
-      this._display.segments.E = `rgb(255,${255 - PORTB_OUT[7]},${255 - PORTB_OUT[7]})`;
-      this._display.idx = +(PORTB_OUT[4] < 128); // 0 or 1
+      this._display.left.G = `rgb(255,${255 - SEGMENTS_1[0]},${255 - SEGMENTS_1[0]})`;
+      this._display.left.F = `rgb(255,${255 - SEGMENTS_1[1]},${255 - SEGMENTS_1[1]})`;
+      this._display.left.A = `rgb(255,${255 - SEGMENTS_1[2]},${255 - SEGMENTS_1[2]})`;
+      this._display.left.B = `rgb(255,${255 - SEGMENTS_1[3]},${255 - SEGMENTS_1[3]})`;
+      this._display.left.C = `rgb(255,${255 - SEGMENTS_1[4]},${255 - SEGMENTS_1[4]})`;
+      this._display.left.D = `rgb(255,${255 - SEGMENTS_1[5]},${255 - SEGMENTS_1[5]})`;
+      this._display.left.E = `rgb(255,${255 - SEGMENTS_1[6]},${255 - SEGMENTS_1[6]})`;
+
+      this._display.right.G = `rgb(255,${255 - SEGMENTS_2[0]},${255 - SEGMENTS_2[0]})`;
+      this._display.right.F = `rgb(255,${255 - SEGMENTS_2[1]},${255 - SEGMENTS_2[1]})`;
+      this._display.right.A = `rgb(255,${255 - SEGMENTS_2[2]},${255 - SEGMENTS_2[2]})`;
+      this._display.right.B = `rgb(255,${255 - SEGMENTS_2[3]},${255 - SEGMENTS_2[3]})`;
+      this._display.right.C = `rgb(255,${255 - SEGMENTS_2[4]},${255 - SEGMENTS_2[4]})`;
+      this._display.right.D = `rgb(255,${255 - SEGMENTS_2[5]},${255 - SEGMENTS_2[5]})`;
+      this._display.right.E = `rgb(255,${255 - SEGMENTS_2[6]},${255 - SEGMENTS_2[6]})`;
     }
 
     // console.log(PORTA_OUT)
@@ -237,12 +296,12 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   switched() {
-    this._switchState = !this._switchState;
-    this.actuator_transform = this._switchState ? SVG_SWITCH_ON : SVG_SWITCH_OFF;
-    if (!this._switchState) {
-      this._clear_portb_leds();
-    } else {
+    this._switchStateIsOnLeds = !this._switchStateIsOnLeds;
+    this.actuator_transform = this._switchStateIsOnLeds ? SVG_SWITCH_ON : SVG_SWITCH_OFF;
+    if (this._switchStateIsOnLeds) {
       this._clear_display_segments();
+    } else {
+      this._clear_portb_leds();
     }
   }
 
