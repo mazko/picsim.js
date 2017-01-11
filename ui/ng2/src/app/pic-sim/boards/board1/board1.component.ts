@@ -61,7 +61,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
 
   actuator_transform = SVG_SWITCH_ON;
 
-  readonly DISPLAY_BACKGROUND = DEFAULT_SEGMENT;
+  public readonly DISPLAY_BACKGROUND = DEFAULT_SEGMENT;
 
   private readonly _display: {left: Display7, right: Display7} = {
     left: new Display7(), right: new Display7()

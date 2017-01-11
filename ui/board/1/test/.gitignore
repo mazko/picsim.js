@@ -1,0 +1,10 @@
+# Ignore
+
+*
+
+
+# Allow
+
+!test.c
+!test.hex
+!.gitignore
