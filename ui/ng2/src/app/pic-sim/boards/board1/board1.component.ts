@@ -10,7 +10,7 @@ const SVG_SWITCH_OFF = 'matrix(.078133 0 0 -.078133 70.84 128)';
 const DEFAULT_RED = '#050000';
 const DEFAULT_GREEN = '#000500';
 const DEFAULT_YELLOW = '#050500';
-const DEFAULT_SEGMENT = '#FFF';
+const DEFAULT_SEGMENT = '#000';
 
 
 class Display7 {
@@ -270,21 +270,21 @@ export class Board1Component extends AbstractBoard implements OnInit {
       this.RB7_RGB = `rgb(${PORTB_OUT[7]},0,0)`;
     } else {
       // 7-segment
-      this._display.left.G = `rgb(255,${255 - SEGMENTS_1[0]},${255 - SEGMENTS_1[0]})`;
-      this._display.left.F = `rgb(255,${255 - SEGMENTS_1[1]},${255 - SEGMENTS_1[1]})`;
-      this._display.left.A = `rgb(255,${255 - SEGMENTS_1[2]},${255 - SEGMENTS_1[2]})`;
-      this._display.left.B = `rgb(255,${255 - SEGMENTS_1[3]},${255 - SEGMENTS_1[3]})`;
-      this._display.left.C = `rgb(255,${255 - SEGMENTS_1[4]},${255 - SEGMENTS_1[4]})`;
-      this._display.left.D = `rgb(255,${255 - SEGMENTS_1[5]},${255 - SEGMENTS_1[5]})`;
-      this._display.left.E = `rgb(255,${255 - SEGMENTS_1[6]},${255 - SEGMENTS_1[6]})`;
+      this._display.left.G = `rgb(${SEGMENTS_1[0]},0,0)`;
+      this._display.left.F = `rgb(${SEGMENTS_1[1]},0,0)`;
+      this._display.left.A = `rgb(${SEGMENTS_1[2]},0,0`;
+      this._display.left.B = `rgb(${SEGMENTS_1[3]},0,0`;
+      this._display.left.C = `rgb(${SEGMENTS_1[4]},0,0`;
+      this._display.left.D = `rgb(${SEGMENTS_1[5]},0,0`;
+      this._display.left.E = `rgb(${SEGMENTS_1[6]},0,0`;
 
-      this._display.right.G = `rgb(255,${255 - SEGMENTS_2[0]},${255 - SEGMENTS_2[0]})`;
-      this._display.right.F = `rgb(255,${255 - SEGMENTS_2[1]},${255 - SEGMENTS_2[1]})`;
-      this._display.right.A = `rgb(255,${255 - SEGMENTS_2[2]},${255 - SEGMENTS_2[2]})`;
-      this._display.right.B = `rgb(255,${255 - SEGMENTS_2[3]},${255 - SEGMENTS_2[3]})`;
-      this._display.right.C = `rgb(255,${255 - SEGMENTS_2[4]},${255 - SEGMENTS_2[4]})`;
-      this._display.right.D = `rgb(255,${255 - SEGMENTS_2[5]},${255 - SEGMENTS_2[5]})`;
-      this._display.right.E = `rgb(255,${255 - SEGMENTS_2[6]},${255 - SEGMENTS_2[6]})`;
+      this._display.right.G = `rgb(${SEGMENTS_2[0]},0,0`;
+      this._display.right.F = `rgb(${SEGMENTS_2[1]},0,0`;
+      this._display.right.A = `rgb(${SEGMENTS_2[2]},0,0`;
+      this._display.right.B = `rgb(${SEGMENTS_2[3]},0,0`;
+      this._display.right.C = `rgb(${SEGMENTS_2[4]},0,0`;
+      this._display.right.D = `rgb(${SEGMENTS_2[5]},0,0`;
+      this._display.right.E = `rgb(${SEGMENTS_2[6]},0,0`;
     }
 
     // console.log(PORTA_OUT)
