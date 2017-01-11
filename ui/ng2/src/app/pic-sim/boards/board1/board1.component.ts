@@ -61,7 +61,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
 
   actuator_transform = SVG_SWITCH_ON;
 
-  private readonly _display: {left, right: Display7} = {
+  private readonly _display: {left: Display7, right: Display7} = {
     left: new Display7(), right: new Display7()
   };
 

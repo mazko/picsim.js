@@ -123,16 +123,23 @@ void interrupt tc_int(void) // interrupt function
     TMR0 -= 250;              // reload the timer - 250uS per interrupt
     INTCONbits.T0IF = 0;      // clear the interrupt flag 
     
+    static bool display7;
+
     if (TRISA) {
       animate = false;
+      display7 = !display7;
       if (!RA1) {
-        PORTB = display7s(2) | 0b10000;
-      } else if (!RA2) {
-        PORTB = display7s(4) | 0b10000;
-      } else if (!RA3) {
         PORTB = display7s(2);
-      } else if (!RA4) {
+        RB4 = display7;
+      } else if (!RA2) {
         PORTB = display7s(4);
+        RB4 = display7;
+      } else if (!RA3) {
+        PORTB = display7s(8);
+        RB4 = display7;
+      } else if (!RA4) {
+        PORTB = display7s(0xF);
+        RB4 = display7;
       } else {
         animate = true;
       }
