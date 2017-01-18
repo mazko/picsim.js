@@ -4,7 +4,7 @@ import { AbstractBoard } from './AbstractBoard';
 // http://stackoverflow.com/q/29775830/
 
 export function ui_catcher(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
-  let originalMethod = descriptor.value; // save a reference to the original method
+  const originalMethod = descriptor.value; // save a reference to the original method
 
   // NOTE: Do not use arrow syntax here. Use a function expression in 
   // order to use the correct value of `this` in this method (see notes below)

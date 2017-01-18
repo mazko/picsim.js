@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs/Subject';
+import { Subject } from 'rxjs/Subject';
 
 
 // https://angular.io/docs/ts/latest/cookbook/component-communication.html#!#bidirectional-service

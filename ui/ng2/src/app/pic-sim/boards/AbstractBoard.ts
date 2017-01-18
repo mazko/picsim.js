@@ -49,7 +49,7 @@ export abstract class AbstractBoard implements OnDestroy {
   ngOnDestroy() {
     this.stop();
     // prevent memory leak when component destroyed
-    for (let sub of this._subscriptions) {
+    for (const sub of this._subscriptions) {
       sub.unsubscribe();
     }
   }

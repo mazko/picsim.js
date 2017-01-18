@@ -153,7 +153,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   private _clear_display_segments() {
-    for (let display of [this._display.left, this._display.right]) {
+    for (const display of [this._display.left, this._display.right]) {
       display.clear();
     }
   }
