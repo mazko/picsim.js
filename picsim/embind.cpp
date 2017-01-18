@@ -9,48 +9,30 @@
 
 #include <emscripten/bind.h>
 
-#include "picsim-0.6/picsim.h"
+#include "picsim-0.6/src/picsim.h"
 
 using namespace emscripten;
 
-/*
-  for alias in 'emcc' 'emconfigure' 'emmake' 'emar'; do
-    alias $alias="docker run -i -t --rm -v \$(pwd):/home/src 42ua/emsdk $alias"
-  done
-  unset alias
-  PS1="(emsdk)$PS1"
-*/
-
-typedef struct {
-  unsigned int   pc;
-  unsigned char  w;
-} PicSimDump;
 
 class PicSim {
 public:
 
-  static int get_proc_by_name(std::string str) {
-    return getprocbyname(str2chr(str));
-  }
-
-  static int get_family_by_name(std::string str) {
-    return getfprocbyname(str2chr(str));
-  }
-
-  void set_serial(std::string name, int flowcontrol, int ctspin, int rtspin){
-    pic_set_serial(&pic, str2chr(name), flowcontrol, ctspin, rtspin);
-  }
-
-  int init(char family, int processor, std::string fname, int lrom,float freq){
-    return pic_init(&pic, family, processor, fname.c_str(), lrom, freq);
+  int init(int processor, std::string fname, int lrom, float freq){
+    // for old picsim versions:
+    // return pic_init(&pic, getfprocbynumber(processor), processor, ...
+    return pic_init(&pic, processor, fname.c_str(), lrom, freq);
+    // picsimlab also does:
+    // pic_init(...
+    // pic.config[0] |= 0x0800; // disable DEBUG
   }
 
   int reset(int flags){
     return pic_reset(&pic, flags);
   }
 
-  void step(int print){
-    pic_step(&pic, print);
+  void step(){
+    // pic.print=0;
+    pic_step(&pic /*, 0 for old picsim versions */);
   }
 
   void end(){
@@ -65,7 +47,7 @@ public:
     return pic_set_pin(&pic, pin, value);
   }
 
-  int set_apin(unsigned char pin,float value){
+  int set_apin(unsigned char pin, float value){
     return pic_set_apin(&pic, pin, value);
   }
 
@@ -81,23 +63,11 @@ public:
     return pic_get_pin_DOV(&pic, pin);
   }
 
-  int set_pin_DOV(unsigned char pin,unsigned char value){
+  int set_pin_DOV(unsigned char pin, unsigned char value){
     return pic_set_pin_DOV(&pic, pin, value);
   }
 
-  const PicSimDump dump() {
-    return {.pc=pic.pc, .w=pic.w};
-  }
-
 private:
-
-  // http://stackoverflow.com/q/347949/
-
-  static char * str2chr(std::string str){
-    std::vector<char> writable(str.begin(), str.end());
-    writable.push_back('\0');
-    return &writable[0];
-  }
   _pic pic;
 };
 
@@ -110,29 +80,19 @@ EMSCRIPTEN_BINDINGS(picsim) {
     constant("PICSIM_PT_ANALOG", PT_ANALOG);
     constant("PICSIM_P16", P16);
     constant("PICSIM_P18", P18);
-    constant("PICSIM_P16F628", P16F628);
-    constant("PICSIM_P16F877", P16F877);
+    constant("PICSIM_P16F84A", P16F84A);
     constant("PICSIM_P16F628A", P16F628A);
     constant("PICSIM_P16F648A", P16F648A);
-    constant("PICSIM_P16F648AICD", P16F648AICD);
-    constant("PICSIM_P16F877A", P16F877A);
     constant("PICSIM_P16F777", P16F777);
+    constant("PICSIM_P16F877A", P16F877A);
     constant("PICSIM_P18F452", P18F452);
-    constant("PICSIM_P18F4620", P18F4620);
+    constant("PICSIM_P18F4520", P18F4520);
     constant("PICSIM_P18F4550", P18F4550);
-    constant("PICSIM_BUFFMAX", BUFFMAX);
-
-    value_object<PicSimDump>("PicSimDump")
-      .field("pc", &PicSimDump::pc)
-      .field("w", &PicSimDump::w)
-      ;
+    constant("PICSIM_P18F45K50", P18F45K50);
+    constant("PICSIM_P18F4620", P18F4620);
 
     class_<PicSim>("PicSim")
       .constructor<>()
-      .class_function("get_proc_by_name", &PicSim::get_proc_by_name)
-      .class_function("get_family_by_name", &PicSim::get_family_by_name)
-      .class_function("get_family_by_proc", &getfprocbynumber)
-      .function("set_serial", &PicSim::set_serial)
       .function("init", &PicSim::init)
       .function("reset", &PicSim::reset)
       .function("step", &PicSim::step)
@@ -146,6 +106,5 @@ EMSCRIPTEN_BINDINGS(picsim) {
       .function("get_pin_DOV", &PicSim::get_pin_DOV)
       .function("set_pin_DOV", &PicSim::set_pin_DOV)
 
-      .function("dump", &PicSim::dump)
       ;
 }

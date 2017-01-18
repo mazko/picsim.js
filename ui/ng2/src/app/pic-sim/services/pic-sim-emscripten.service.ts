@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 
 // https://angular.io/docs/ts/latest/guide/dependency-injection.html#singleton-services
 
-const em = window['pic_sim_module'],
-      PicSim = em.PicSim;
+const em = window['pic_sim_module'];
 
 type CheckActionType = 'throw' | 'log-all' | 'log-err' | 'none';
 
@@ -16,7 +15,7 @@ export class PicSimEmscriptenService {
   private get lazySim() {
     if (!this._pic_sim) {
       // alert(42);
-      this._pic_sim = new PicSim();
+      this._pic_sim = new em.PicSim();
     }
     return this._pic_sim;
   }
@@ -31,8 +30,11 @@ export class PicSimEmscriptenService {
   }
 
   get PIC16F648A(): number {
-    // alert([em.PICSIM_P16F648A, PicSim.get_proc_by_name('PIC16F648A')]);
     return em.PICSIM_P16F648A;
+  }
+
+  get PIC18F4620(): number {
+    return em.PICSIM_P18F4620;
   }
 
   private _checkExitCode(
@@ -60,8 +62,7 @@ export class PicSimEmscriptenService {
   }
 
   init(proc: number, fileName: string, freq: number): void {
-    const family = PicSim.get_family_by_proc(proc),
-          code = this.lazySim.init(family, proc, fileName, 1, freq);
+    const code = this.lazySim.init(proc, fileName, 1, freq);
     this._checkExitCode(code);
   }
 
@@ -71,15 +72,15 @@ export class PicSimEmscriptenService {
   }
 
   step(): void {
-    this.lazySim.step(0);
+    this.lazySim.step();
   }
 
   end(): void {
     this.lazySim.end();
   }
 
-  get_pin(pin: number): number {
-    return this.lazySim.get_pin(pin);
+  get_pin(pin: number): boolean {
+    return !!this.lazySim.get_pin(pin);
   }
 
   set_pin(
@@ -88,6 +89,15 @@ export class PicSimEmscriptenService {
       act: CheckActionType= 'none'): void {
 
     const code = this.lazySim.set_pin(pin, +value);
+    this._checkExitCode(code, act);
+  }
+
+  set_a_pin(
+      pin: number,
+      value: number,
+      act: CheckActionType= 'none'): void {
+
+    const code = this.lazySim.set_apin(pin, value);
     this._checkExitCode(code, act);
   }
 

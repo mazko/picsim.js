@@ -9,11 +9,14 @@ done
 unset alias
 
 if [ ! -d "picsim-0.6" ]; then
-  curl -sL https://netcologne.dl.sourceforge.net/project/picsim/picsim/picsim-0.6/picsim-0.6.tgz | tar xz
+  git clone https://github.com/lcgamboa/picsim.git picsim-0.6
   cd picsim-0.6
-  git init && git add . && git commit -m 'f'
+  # 4d8a31704ab046b8320dbaa03dd4445111e69ca9
+  # 1bf9b3ff00945cd71b7a83dd6ba235239e5488e9
+  # 821792f546474ebab0de81fd14aab12f204d2aff -- < ADC hangs
+  git checkout e323b075137a76c0e7d320eaa06cfa0808dce3de
 
-  # cd picsim-0.6 && git diff Makefile > ../patches/Makefile.patch && cd -
+  # cd picsim-0.6/src && git diff Makefile > ../../patches/Makefile.patch && cd -
   patch -p1 < ../patches/Makefile.patch
 
   cd -
@@ -21,10 +24,10 @@ if [ ! -d "picsim-0.6" ]; then
 fi
   
 # emmake make -C picsim-0.6 clean
-emmake make -C picsim-0.6 libpicsim.a
+emmake make -C picsim-0.6/src libpicsim.a
 
 emcc -O3 embind.cpp \
-  --memory-init-file 0 --bind -o ./picsim-0.6/picsim.js ./picsim-0.6/libpicsim.a 
+  --memory-init-file 0 --bind -o ./picsim-0.6/picsim.js ./picsim-0.6/src/libpicsim.a 
 
 {
   echo '

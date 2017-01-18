@@ -13,10 +13,12 @@ import { AppComponent } from './app.component';
 import { PicSimComponent } from './pic-sim/pic-sim.component';
 import { Board1Component } from './pic-sim/boards/board1/board1.component';
 import { GistComponent } from './pic-sim/gist/gist.component';
+import { Board2Component } from './pic-sim/boards/board2/board2.component';
 
 
 const routes: Routes = [
   { path: 'board/1', component: Board1Component },
+  { path: 'board/2', component: Board2Component },
   { path: '', redirectTo: 'board/1', pathMatch: 'full' },
   { path: ':id', component: GistComponent },
 ];
@@ -27,7 +29,8 @@ const routes: Routes = [
     AppComponent,
     PicSimComponent,
     Board1Component,
-    GistComponent
+    GistComponent,
+    Board2Component
   ],
   imports: [
     Ng2BootstrapModule.forRoot(),

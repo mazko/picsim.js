@@ -182,10 +182,10 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   @ui_catcher
-  _do_steps(steps: number): void {
+  _do_steps(STEPS_TOTAL: number): void {
     const sim = this._picSim,
           PROBES = 250,
-          STEPS_BETWEEN_PROBES = steps / PROBES,
+          STEPS_BETWEEN_PROBES = STEPS_TOTAL / PROBES,
           PORTB_OUT = Array<number>(8).fill(0),
           PORTA_OUT = Array<number>(4).fill(0),
           SEGMENTS_1 = Array<number>(7).fill(0),
@@ -195,15 +195,15 @@ export class Board1Component extends AbstractBoard implements OnInit {
       throw new Error('PROBES have Fractional part ?');
     }
 
-    for (let step = 0; step < steps; step++) {
+    for (const step = {__step: 0}; step.__step < STEPS_TOTAL; step.__step++) {
       sim.step();
       // get_pins same as in doc DS40044E
-      if (!(step % STEPS_BETWEEN_PROBES)) {
+      if (!(step.__step % STEPS_BETWEEN_PROBES)) {
 
         if (this._switchStateIsOnLeds) {
           // PORTB pins 6..13
           for (let i = 0; i < PORTB_OUT.length; i++) {
-            PORTB_OUT[i] += sim.get_pin(i + 6);
+            if (sim.get_pin(i + 6)) { PORTB_OUT[i]++; }
           }
         } else {
           // RB4 select current display7 index  
@@ -211,16 +211,16 @@ export class Board1Component extends AbstractBoard implements OnInit {
           for (let i = 0; i < SEGMENTS_1.length; i++) {
             const value = sim.get_pin(i < 4 ? i + 6 : i + 7);
             if (display_idx) {
-              SEGMENTS_2[i] += value;
+              if (value) { SEGMENTS_2[i]++; }
             } else {
-              SEGMENTS_1[i] += value;
+              if (value) { SEGMENTS_1[i]++; }
             }
           }
         }
 
         // PORTA leds pins 17,18,1,2
         // PORTA buttons pins 18,1,2,3
-        PORTA_OUT[0] += sim.get_pin(17);
+        if (sim.get_pin(17)) { PORTA_OUT[0]++; }
         // if (sim.get_pin_dir(3) === 'in') {
         //   sim.set_pin(3, this.RA4_IN, 'log-err');
         // }
@@ -232,7 +232,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
           // led pulled up by resistor
           if (this.RA1_IN) { PORTA_OUT[1]++; }
         } else {
-          PORTA_OUT[1] += sim.get_pin(18);
+          if (sim.get_pin(18)) { PORTA_OUT[1]++; }
         }
 
         if (sim.get_pin_dir(1) === 'in') {
@@ -240,7 +240,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
           // led pulled up by resistor
           if (this.RA2_IN) { PORTA_OUT[2]++; }
         } else {
-          PORTA_OUT[2] += sim.get_pin(1);
+          if (sim.get_pin(1)) { PORTA_OUT[2]++; }
         }
 
         if (sim.get_pin_dir(2) === 'in') {
@@ -248,7 +248,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
           // led pulled up by resistor
           if (this.RA3_IN) { PORTA_OUT[3]++; }
         } else {
-          PORTA_OUT[3] += sim.get_pin(2);
+          if (sim.get_pin(2)) { PORTA_OUT[3]++; }
         }
 
       }

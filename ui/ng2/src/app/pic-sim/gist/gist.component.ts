@@ -32,9 +32,9 @@ export class GistComponent implements OnInit {
       ).subscribe(
         ({hex, boardId, freq}): void => {
           try {
-            this._router.navigate(['/board/', boardId]);
             this._state.create_hex_file_from_string(hex);
             this._state.freq = freq;
+            this._router.navigate(['/board/', boardId]);
           } catch (err) {
             this._controller.errorOccured(err);
           }

@@ -1,7 +1,7 @@
-diff --git a/Makefile b/Makefile
-index b73394e..1a60c17 100644
---- a/Makefile
-+++ b/Makefile
+diff --git a/src/Makefile b/src/Makefile
+index ba0627a..281f550 100644
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -1,13 +1,15 @@
 -CC= gcc
 +# CC= gcc
@@ -16,8 +16,8 @@ index b73394e..1a60c17 100644
  
  LIBVER=0.6
  LIBMAINVER=0
--FLAGS= -Wall -O3 -fomit-frame-pointer -fpic
-+FLAGS= -Werror -Wno-error=unused-result -Wall -O3 -fomit-frame-pointer -fpic
+-FLAGS= -Wall -O3 -fomit-frame-pointer -fpic -Winline 
++FLAGS= -Werror -Wall -O3 -fomit-frame-pointer -fpic -Winline
  
  prefix = /usr
  exec_prefix = ${prefix}

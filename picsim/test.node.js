@@ -5,22 +5,9 @@ const PicSimModule = require('./picsim.js'),
 
 assert.deepStrictEqual(PicSimModule.PICSIM_P18, 2);
 
-const proc = PicSim.get_proc_by_name('PIC16F628A');
-assert.deepStrictEqual(proc, 0x1060);
-const family = PicSim.get_family_by_name('PIC16F628A');
-assert.deepStrictEqual(family, 1);
-assert.deepStrictEqual(PicSim.get_family_by_proc(proc), 1);
-
 PicSimModule.FS_createDataFile('.','blink.hex', fs.readFileSync('./blink.hex'), true);
 const sim = new PicSim();
-sim.init(family,proc,'./blink.hex',1,1000000);
-assert.deepStrictEqual(sim.dump(), { pc: 0, w: 0 });
-[[1,0],[0x07FE,0],[0x07FF,0],[0,0],[0x07DA,0],[0x07DB,0],[0x07DC,0]].map(v => {
-  sim.step(0);
-  assert.deepStrictEqual(sim.dump(), { pc: v[0], w: v[1] });
-});
-sim.reset(0);
-assert.deepStrictEqual(sim.dump(), { pc: 0, w: 0 });
+sim.init(PicSimModule.PICSIM_P16F648A,'./blink.hex',1,1000000);
 
 const TIMER=0.1, NSTEP=TIMER*1000000/4;
 var last_pin = null;
@@ -43,7 +30,7 @@ function precT(cb, interval){
 }
 precT(() => {
   for(var i=0; i<NSTEP; i++) {
-    sim.step(0);
+    sim.step();
   }
   // const pins = sim.get_pins();
   // console.log(Object.keys(Object.getPrototypeOf(pins)));

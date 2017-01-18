@@ -31,7 +31,8 @@ export class PicSimComponent {
   ];
 
   readonly boards: {name: string, id: number}[] = [
-    {name: 'Hello World',  id: 1},
+    {name: 'PIC16F648A & 7-Segment Dual Digit Display',  id: 1},
+    {name: 'PIC18F4620 & HD44780 & DS1307 & ADC & Matrix Keyboard',  id: 2},
   ];
 
   readonly alerts: {msg: string, type: BsAlertType, html?: boolean}[] = [];
