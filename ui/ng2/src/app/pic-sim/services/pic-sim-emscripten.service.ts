@@ -21,7 +21,12 @@ export class PicSimEmscriptenService {
     return this._pic_sim;
   }
 
-  FS_createDataFile(parent: string, name: string, data: Uint8Array, canRead: boolean) {
+  FS_createDataFile(
+      parent: string,
+      name: string,
+      data: Uint8Array,
+      canRead: boolean): void {
+
     em.FS_createDataFile(parent, name, data, canRead);
   }
 
@@ -30,7 +35,10 @@ export class PicSimEmscriptenService {
     return em.PICSIM_P16F648A;
   }
 
-  private _checkExitCode(code: number, act: CheckActionType= 'throw') {
+  private _checkExitCode(
+      code: number,
+      act: CheckActionType= 'throw'): void {
+
     const CODE_ERROR = 0;
     switch (act) {
       case 'throw':
@@ -51,22 +59,22 @@ export class PicSimEmscriptenService {
     }
   }
 
-  init(proc: number, fileName: string, freq: number) {
+  init(proc: number, fileName: string, freq: number): void {
     const family = PicSim.get_family_by_proc(proc),
           code = this.lazySim.init(family, proc, fileName, 1, freq);
     this._checkExitCode(code);
   }
 
-  reset(flags: number) {
+  reset(flags: number): void {
     const code = this.lazySim.reset(flags);
     this._checkExitCode(code);
   }
 
-  step() {
+  step(): void {
     this.lazySim.step(0);
   }
 
-  end() {
+  end(): void {
     this.lazySim.end();
   }
 
@@ -74,7 +82,11 @@ export class PicSimEmscriptenService {
     return this.lazySim.get_pin(pin);
   }
 
-  set_pin(pin: number, value: boolean, act: CheckActionType= 'none') {
+  set_pin(
+      pin: number,
+      value: boolean,
+      act: CheckActionType= 'none'): void {
+
     const code = this.lazySim.set_pin(pin, +value);
     this._checkExitCode(code, act);
   }

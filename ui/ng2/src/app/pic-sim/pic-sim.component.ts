@@ -47,7 +47,7 @@ export class PicSimComponent {
     return this._state.hasHex;
   }
 
-  run_clicked() {
+  run_clicked(): void {
     if (this.isRunning) {
       this._controller.stopSimulation();
     } else {
@@ -55,12 +55,12 @@ export class PicSimComponent {
     }
   }
 
-  freq_clicked(idx) {
+  freq_clicked(idx: number): void {
     this.freq = this.freqs[idx].f;
     this._state.freq = this.freqs[idx].v;
   }
 
-  gist_clicked() {
+  gist_clicked(): void {
 
     this._gist
       .create({
@@ -68,7 +68,7 @@ export class PicSimComponent {
         boardId: this._state.currentBoardId,
         freq: this._state.freq
       })
-      .then(({id, url}) => {
+      .then(({id, url}): void => {
         // TODO: routerLink instead window.location
         this.alerts.push({
           msg: `<strong>GIST:</strong>
@@ -82,23 +82,21 @@ export class PicSimComponent {
       });
   }
 
-  hex_changed($event) {
-    const this_ = this;
+  hex_changed($event): void {
     for (const file of $event.target.files) {
       const reader = new FileReader();
-      reader.onload = (function(theFile) {
-        return (e) => {
-          const contents = new Uint8Array(e.target.result);
-          try {
-            this_._state.create_hex_file(contents);
-            this_.gistBtnEnabled = true;
-          } catch (err) {
-            // console.log(e);
-            console.log(err.message || err); // error short version
-            this_.alerts.push({msg: `${this_._state.HEX_FILE_NAME}: ${err.message}`, type: 'danger'});
-          }
-        };
-      })(file);
+      // https://github.com/Microsoft/TypeScript/issues/299#issuecomment-168538829
+      reader.onload = (f: any): void => {
+        const contents = new Uint8Array(f.target.result);
+        try {
+          this._state.create_hex_file(contents);
+          this.gistBtnEnabled = true;
+        } catch (err) {
+          // console.log(f);
+          console.log(err.message || err); // error short version
+          this.alerts.push({msg: `${this._state.HEX_FILE_NAME}: ${err.message}`, type: 'danger'});
+        }
+      };
       reader.readAsArrayBuffer(file);
     }
   }
@@ -110,24 +108,25 @@ export class PicSimComponent {
 
     _controller
       .errorOccured$
-      .subscribe(err => {
-          // console.log(model);
+      .subscribe((err): void => {
           console.log(`${err}`); // error short version
           this.alerts.push({msg: `${err}`, type: 'danger'});
       });
 
     _controller
       .healthChanged$
-      .subscribe(({dt, interval}) => {
+      .subscribe(({dt, interval}): void => {
         // console.log(dt > interval)
         this.isFreezed = (dt > interval);
       });
 
-    _state.subscribe('freq', () =>
-        this.freqs.forEach(({f, v}) =>
-          (v === this._state.freq) &&
-          (this.freq = f)
-      ));
+    _state.subscribe('freq', (): void => {
+      for (const {f, v} of this.freqs) {
+        if (v === this._state.freq) {
+          this.freq = f;
+        }
+      }
+    });
   }
 
 }

@@ -28,21 +28,21 @@ export class ControllerService {
   readonly healthChanged$ = this.healthSource.asObservable();
 
   // Service message commands parent --> child
-  startSimulation() {
+  startSimulation(): void {
     this.startSource.next();
   }
 
-  stopSimulation() {
+  stopSimulation(): void {
     this.stopSource.next();
   }
 
   // Service message commands child --> parent
 
-  errorOccured(error: Error) {
+  errorOccured(error: Error): void {
     this.errorSource.next(error);
   }
 
-  healthChanged(health: IHealth) {
+  healthChanged(health: IHealth): void {
     this.healthSource.next(health);
   }
 

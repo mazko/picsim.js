@@ -46,7 +46,7 @@ export abstract class AbstractBoard implements OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stop();
     // prevent memory leak when component destroyed
     for (const sub of this._subscriptions) {
@@ -55,7 +55,7 @@ export abstract class AbstractBoard implements OnDestroy {
   }
 
   @ui_catcher
-  private stop() {
+  private stop(): void {
     if (this._simSatate === SimStateEnum.RUNNING) {
       this._simSatate = SimStateEnum.STOPPING;
     }
@@ -63,37 +63,40 @@ export abstract class AbstractBoard implements OnDestroy {
 
   protected abstract _do_steps(steps: number): void;
 
-  @ui_catcher
-  private start() {
-    const this_ = this;
-    function precT(cb, interval) {
-      let expected = Date.now() + interval,
-          health_cache = null;
-      const UNADJUSTABLE_INTERVAL = 10 * interval;
-      setTimeout(step, interval);
-      function step() {
-        if (this_._simSatate === SimStateEnum.STOPPING) {
-          this_._simSatate = SimStateEnum.READY;
-          this_._state.isRunning = false;
-          this_._picSim.end();
-        } else {
-          const dt = Date.now() - expected;
-          if (dt > UNADJUSTABLE_INTERVAL) {
-            console.log('dt is unadjustable, reset timer!');
-            expected = Date.now();
-          } else if (dt > interval) {
-            console.log('dt > interval, not real time');
-          }
-          if (health_cache !== (dt > interval)) {
-            this_._controller.healthChanged({dt, interval});
-            health_cache = (dt > interval);
-          }
-          cb();
-          expected += interval;
-          setTimeout(step, Math.max(0, interval - dt));
+  private _prec_timer(cb: () => void, interval: number): void {
+    let expected = Date.now(),
+        health_cache = null;
+    const UNADJUSTABLE_INTERVAL = 10 * interval;
+    const task = (): void => {
+      if (this._simSatate === SimStateEnum.STOPPING) {
+        this._simSatate = SimStateEnum.READY;
+        this._state.isRunning = false;
+        this._picSim.end();
+      } else {
+        const dt = Date.now() - expected;
+        if (dt > UNADJUSTABLE_INTERVAL) {
+          console.log('dt is unadjustable, reset timer!');
+          expected = Date.now();
+        } else if (dt > interval) {
+          console.log('dt > interval, not real time');
+        } else if (dt < 0) {
+          console.log('dt < 0 ???');
         }
+        if (health_cache !== (dt > interval)) {
+          this._controller.healthChanged({dt, interval});
+          health_cache = (dt > interval);
+        }
+        cb();
+        expected += interval;
+        setTimeout(task, Math.max(0, interval - dt));
       }
-    }
+    };
+    // start
+    task();
+  }
+
+  @ui_catcher
+  private start(): void {
 
     if (this._simSatate === SimStateEnum.READY) {
 
@@ -108,7 +111,7 @@ export abstract class AbstractBoard implements OnDestroy {
         throw new Error('NSTEP has Fractional part ?');
       }
 
-      precT(() => {
+      this._prec_timer((): void  => {
         this._do_steps(NSTEP);
       }, TIMER * 1000);
 

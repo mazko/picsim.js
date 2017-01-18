@@ -24,13 +24,13 @@ export class GistComponent implements OnInit {
       private readonly _router: Router,
       private readonly _state: StateService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     // alert(this._route.snapshot.params['id'])
     this._route.params
       .switchMap((params: Params) =>
         this._gist.fetch(params['id'])
       ).subscribe(
-        ({hex, boardId, freq}) => {
+        ({hex, boardId, freq}): void => {
           try {
             this._router.navigate(['/board/', boardId]);
             this._state.create_hex_file_from_string(hex);

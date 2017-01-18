@@ -16,8 +16,8 @@ type StateType =
 // http://stackoverflow.com/q/30689324/
 // http://stackoverflow.com/q/29775830/
 
-function state_prop(newState: StateType) {
-  return function (target: Object, name: string) {
+function state_prop(newState: StateType): Function {
+  return function (target: Object, name: string): void {
     const _name = '___picsim_private_only_symbol_' + name;
     // const _name = Symbol(name);
     Object.defineProperty(target, name, {
@@ -79,16 +79,20 @@ export class StateService {
     // and without mandatory default value
     callback();
     return this.stateChanged$.subscribe(
-      newState => (newState === filterState) && callback());
+      (newState): void => {
+        if (newState === filterState) {
+          callback();
+        }
+      });
   }
 
   constructor(private readonly _picSim: PicSimEmscriptenService) {}
 
-  private _notifyState(newState: StateType) {
+  private _notifyState(newState: StateType): void {
     this.stateSource.next(newState);
   }
 
-  ___picsim_private_only_method_notifyState(newState: StateType) {
+  ___picsim_private_only_method_notifyState(newState: StateType): void {
     this._notifyState(newState);
   }
 
@@ -101,7 +105,7 @@ export class StateService {
     return c.join('');
   }
 
-  create_hex_file(data: Uint8Array) {
+  create_hex_file(data: Uint8Array): void {
     // '.' should also work, but '/home/picsim' is for sure
     // we are in own dir when picsim.init('./program.hex', ...) is called
     this._picSim.FS_createDataFile('/home/picsim', this.HEX_FILE_NAME, data, true);
@@ -109,11 +113,9 @@ export class StateService {
     this._notifyState('hex');
   }
 
-  create_hex_file_from_string(data: string) {
+  create_hex_file_from_string(data: string): void {
     this.create_hex_file(
-      new Uint8Array(
-        data.split('').map(c => c.charCodeAt(0))
-    ));
+      new Uint8Array(data.split('').map(c => c.charCodeAt(0))));
   }
 
 }

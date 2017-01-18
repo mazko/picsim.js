@@ -135,18 +135,20 @@ export class Board1Component extends AbstractBoard implements OnInit {
     return this._display.right.DOT;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this._state.currentBoardId = 1;
     this._state.chip = this._picSim.PIC16F648A;
     this._state.freq = this._state.freq || 1e6;
     this._subscriptions.push(this._state
-      .subscribe('simulation', () =>
-        !this._state.isRunning
-        && this._reset_board_ui()
-    ));
+      .subscribe('simulation', (): void => {
+        if (!this._state.isRunning) {
+          this._reset_board_ui();
+        }
+      })
+    );
   }
 
-  private _clear_portb_leds() {
+  private _clear_portb_leds(): void {
     this.RB0_RGB = this.RB1_RGB = this.RB2_RGB =
     this.RB3_RGB = this.RB4_RGB = this.RB5_RGB =
     this.RB6_RGB = this.RB7_RGB = DEFAULT_RED;
@@ -158,7 +160,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
     }
   }
 
-  private _reset_board_ui() {
+  private _reset_board_ui(): void {
     this._clear_portb_leds();
     this._clear_display_segments();
 
@@ -169,7 +171,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
     this.btn_mouseup();
   }
 
-  private _normalize_probes(values: number[], PROBES: number) {
+  private _normalize_probes(values: number[], PROBES: number): void {
     for (let i = 0; i < values.length; i++) {
       values[i] = Math.ceil(values[i] * 0xFF / PROBES);
       if (values[i] > 0xFF) {
@@ -180,7 +182,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   @ui_catcher
-  _do_steps(steps: number) {
+  _do_steps(steps: number): void {
     const sim = this._picSim,
           PROBES = 250,
           STEPS_BETWEEN_PROBES = steps / PROBES,
@@ -297,7 +299,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
     this.RA3_RGB = `rgb(0,${PORTA_OUT[3]},0)`;
   }
 
-  switched() {
+  switched(): void {
     this._switchStateIsOnLeds = !this._switchStateIsOnLeds;
     this.actuator_transform = this._switchStateIsOnLeds ? SVG_SWITCH_ON : SVG_SWITCH_OFF;
     if (this._switchStateIsOnLeds) {
@@ -308,33 +310,33 @@ export class Board1Component extends AbstractBoard implements OnInit {
   }
 
   @ui_catcher
-  resetClicked() {
+  resetClicked(): void {
     this._picSim.reset(-1);
   }
 
-  btn_mouseup() {
+  btn_mouseup(): void {
     this.RA1_IN = this.RA2_IN =
     this.RA3_IN = this.RA4_IN = true;
   }
 
   // http://stackoverflow.com/q/9506041
 
-  btn_RA1($event) {
+  btn_RA1($event: Event): void {
     this.RA1_IN = false;
     $event.preventDefault();
   }
 
-  btn_RA2($event) {
+  btn_RA2($event: Event): void {
     this.RA2_IN = false;
     $event.preventDefault();
   }
 
-  btn_RA3($event) {
+  btn_RA3($event: Event): void {
     this.RA3_IN = false;
     $event.preventDefault();
   }
 
-  btn_RA4($event) {
+  btn_RA4($event: Event): void {
     this.RA4_IN = false;
     $event.preventDefault();
   }
