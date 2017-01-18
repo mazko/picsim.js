@@ -18,7 +18,7 @@ export class PicSimComponent {
 
   isFreezed = false;
 
-  freqs: {f: string, v: number}[] = [
+  readonly freqs: {f: string, v: number}[] = [
     {f: '50 KHz',  v: 5e4},
     {f: '100 KHz', v: 1e5},
     {f: '250 KHz', v: 25e4},
@@ -30,17 +30,28 @@ export class PicSimComponent {
     {f: '16 MHz',  v: 16e6},
   ];
 
+  readonly boards: {name: string, id: number}[] = [
+    {name: 'Hello World',  id: 1},
+  ];
+
   readonly alerts: {msg: string, type: BsAlertType, html?: boolean}[] = [];
 
   gistBtnEnabled: boolean;
-
-  freq: string;
 
   // Angular2 template binding magic 
   // detects changes even inside getters
 
   get isRunning(): boolean {
     return this._state.isRunning;
+  }
+
+  get freq(): string {
+    for (const {f, v} of this.freqs) {
+      if (v === this._state.freq) {
+        return f;
+      }
+    }
+    // console.log(`Freq ${this._state.freq} not found, default`);
   }
 
   get hasHex(): boolean {
@@ -56,7 +67,6 @@ export class PicSimComponent {
   }
 
   freq_clicked(idx: number): void {
-    this.freq = this.freqs[idx].f;
     this._state.freq = this.freqs[idx].v;
   }
 
@@ -119,14 +129,6 @@ export class PicSimComponent {
         // console.log(dt > interval)
         this.isFreezed = (dt > interval);
       });
-
-    _state.subscribe('freq', (): void => {
-      for (const {f, v} of this.freqs) {
-        if (v === this._state.freq) {
-          this.freq = f;
-        }
-      }
-    });
   }
 
 }

@@ -67,7 +67,7 @@ export abstract class AbstractBoard implements OnDestroy {
     let expected = Date.now(),
         health_cache = null;
     const UNADJUSTABLE_INTERVAL = 10 * interval;
-    const task = (): void => {
+    const next = (): void => {
       if (this._simSatate === SimStateEnum.STOPPING) {
         this._simSatate = SimStateEnum.READY;
         this._state.isRunning = false;
@@ -79,20 +79,22 @@ export abstract class AbstractBoard implements OnDestroy {
           expected = Date.now();
         } else if (dt > interval) {
           console.log('dt > interval, not real time');
-        } else if (dt < 0) {
-          console.log('dt < 0 ???');
         }
+        // DEBUG: should happen only once after UNADJUSTABLE
+        // if (dt < 0) {
+        //   console.log('dt < 0 ???');
+        // }
         if (health_cache !== (dt > interval)) {
           this._controller.healthChanged({dt, interval});
           health_cache = (dt > interval);
         }
         cb();
         expected += interval;
-        setTimeout(task, Math.max(0, interval - dt));
+        setTimeout(next, Math.max(0, interval - dt));
       }
     };
     // start
-    task();
+    next();
   }
 
   @ui_catcher
