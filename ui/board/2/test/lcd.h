@@ -39,6 +39,14 @@
 
 #define L_CFG   0x38
 
+#define LCD_CONTROL 0x08
+#define LCD_DISPLAY 0x04
+#define LCD_CURSOR  0x02
+#define LCD_BLINK 0x01
+
+#define LCD_CURSOR_ON (LCD_CONTROL | LCD_DISPLAY | LCD_CURSOR | LCD_BLINK)
+#define LCD_CURSOR_OFF  (LCD_CONTROL | LCD_DISPLAY)
+
 void lcd_init(void);
 void lcd_cmd(unsigned char val); 
 void lcd_dat(unsigned char val);

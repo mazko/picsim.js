@@ -30,10 +30,12 @@ export class PicSimEmscriptenService {
   }
 
   get PIC16F648A(): number {
+    // alert([em.PICSIM_P16F648A, em.PICSIM_P16F648A === 0x1100])
     return em.PICSIM_P16F648A;
   }
 
   get PIC18F4620(): number {
+    // alert([em.PICSIM_P18F4620, em.PICSIM_P18F4620 === 0x0C00])
     return em.PICSIM_P18F4620;
   }
 

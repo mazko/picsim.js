@@ -88,7 +88,7 @@ export class Board2Component extends AbstractBoard implements OnInit {
 
   ngOnInit(): void {
     this._state.chip = this._picSim.PIC18F4620;
-    this._state.freq = this._state.freq || 1e6;
+    this._state.freq = this._state.freq || 25e4;
     this._state.currentBoardId = 2;
     this._subscriptions.push(this._state
       .subscribe('simulation', (): void => {

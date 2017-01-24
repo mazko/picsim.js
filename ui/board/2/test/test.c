@@ -4,7 +4,7 @@
 
 */
 
-#define _XTAL_FREQ 5e4
+#define _XTAL_FREQ 25e4
 
 #include <xc.h>
 #include <stdbool.h>
@@ -18,34 +18,34 @@
 #include "rtc_r.c"
 
 
-
+#define DUTY_MAX 50
 
 static void _duty_cycle(
     const unsigned char value,
     unsigned char volatile * const port,
     const char mask) {
 
-  unsigned char i = 0;
-  *port = mask;
-  while (++i <= value);
-  *port = 0;
-  while (i++ < 0xFF);
+  for (unsigned char i = 0; i < DUTY_MAX; i++) {
+    *port = i < value ? mask : 0;        
+  }
 }
 
 
 int main() {
 
-  PORTA = PORTC = 0;
-  TRISA = TRISC = 0;
+  PORTA = TRISA = 0; // wow! http://stackoverflow.com/questions/19353686/
+  PORTC = TRISC = 0;
 
   // lcd
-  PORTD = PORTE = 0;
-  TRISD = 0;
+  PORTD = TRISD = 0;
+  PORTE = 0;
   TRISE = 1;
 
   lcd_init();
 
-  for (uint8_t i = 22; --i;) {
+  lcd_cmd (LCD_CURSOR_OFF);
+
+  for (uint8_t i = 10; --i;) {
     rtc_r();
     lcd_cmd(L_CLR);
     lcd_cmd(L_L1);
@@ -53,6 +53,9 @@ int main() {
     lcd_cmd(L_L2);
     lcd_str(rtc_time);
   }
+
+lcd_cmd (LCD_CURSOR_ON);
+
 //testa caracter especial
   lcd_cmd(L_CLR);
   lcd_cmd(L_L1);
@@ -133,15 +136,6 @@ int main() {
 
 // ADC
 
-#define LCD_CONTROL 0x08
-#define LCD_DISPLAY 0x04
-#define LCD_CURSOR  0x02
-#define LCD_BLINK 0x01
-
-#define LCD_CURSOR_ON (LCD_CONTROL | LCD_DISPLAY | LCD_CURSOR | LCD_BLINK)
-#define LCD_CURSOR_OFF  (LCD_CONTROL | LCD_DISPLAY)
-
-
   lcd_cmd(L_CLR);
   lcd_cmd(L_L1);
   lcd_str("ADC RE0:");
@@ -204,7 +198,7 @@ lcd_cmd (LCD_CURSOR_OFF);
     led = 1;
 
     do {
-      for (unsigned char i = 0; i < 0xFF; i++) {
+      for (unsigned char i = 0; i < DUTY_MAX; i++) {
         _duty_cycle(i, &PORTA, led);
       }
     } while(led <<= 1);
@@ -215,7 +209,7 @@ lcd_cmd (LCD_CURSOR_OFF);
       if (led & 0b1000) {
         led = 0b100000;
       }
-      for (unsigned char i = 0; i < 0xFF; i++) {
+      for (unsigned char i = 0; i < DUTY_MAX; i++) {
         _duty_cycle(i, &PORTC, led);
       }
     } while(led <<= 1);
