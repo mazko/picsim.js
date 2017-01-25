@@ -76,12 +76,12 @@ public:
 
     this->step();
 
-    for (unsigned char i = 0; i < sizeof pins / sizeof pins[0]; i++) {
+    for (unsigned char i = 0; i < (sizeof pins / sizeof pins[0]); i++) {
       const unsigned char pin = pins[i];
       if (pin > 0) {
         if (this->get_pin_dir(pin) == PD_OUT) {
           if (this->get_pin(pin)) {
-            result |= ((1 << sizeof pins) << i);
+            result |= ((1 << (sizeof pins / sizeof pins[0])) << i);
           }
         } else {
           result |= (1 << i);

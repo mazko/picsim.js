@@ -121,7 +121,7 @@ export class PicSimEmscriptenService {
   // hack
 
   em_hack_step_and_get(pin1: number, pin2 = 0, pin3 = 0, pin4 = 0): { dir: PinDirType, val: boolean }[] {
-    const res = this.lazySim.em_hack_step_and_get(pin1, pin2, pin3, pin4);
+    const res: number = this.lazySim.em_hack_step_and_get(pin1, pin2, pin3, pin4);
     return [1, 2, 4, 8].map(v => ({
       /* tslint:disable:no-bitwise */
       dir: (res & v) ? 'in' as PinDirType : 'out' as PinDirType,
