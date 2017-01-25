@@ -121,10 +121,10 @@ export class Board2Component extends AbstractBoard implements OnInit {
     }
   }
 
-  private _lcd_io_pins(): void {
+  private _lcd_io_pins(pin9: boolean): void {
     const sim = this._picSim,
           lcd = this._lcd_display;
-    if (sim.get_pin_dir(9) === 'out' && !sim.get_pin(9)) {
+    if (pin9) {
       if (!lcd.pinE) {
         let data = 0;
         /* tslint:disable:no-bitwise */
@@ -148,26 +148,26 @@ export class Board2Component extends AbstractBoard implements OnInit {
     }
   }
 
-  private _rtc_io_pins(): void {
-    const sim = this._picSim,
-          sda_dir = sim.get_pin_dir(23);
+  private _rtc_io_pins(pin18: { dir: 'in' | 'out', val: boolean },
+                       pin23: { dir: 'in' | 'out', val: boolean }): void {
+    const sim = this._picSim;
     let sck: number, sda: number, res: boolean;
 
-    if (sda_dir === 'in') {
+    if (pin23.dir === 'in') {
       // pull up
       sda = 1;
     } else {
-      sda = +sim.get_pin(23);
+      sda = +pin23.val;
     }
-    if (sim.get_pin_dir(18) === 'in') {
+    if (pin18.dir === 'in') {
       // pull up
       sck = 1;
       sim.set_pin(18, true);
     } else {
-      sck = +sim.get_pin(18);
+      sck = +pin18.val;
     }
     res = this._rtc.io(sck, sda);
-    if (sda_dir === 'in') {
+    if (pin23.dir === 'in') {
       sim.set_pin(23, res);
     }
   }
@@ -187,12 +187,13 @@ export class Board2Component extends AbstractBoard implements OnInit {
     this._rtc.update();
 
     for (const step = {__step: 0}; step.__step < STEPS_TOTAL; step.__step++) {
-      sim.step();
+
+      const hack_data = sim.em_hack_step_and_get(9, 18, 23);
 
       // high priority io
 
-      this._lcd_io_pins();
-      this._rtc_io_pins();
+      this._lcd_io_pins(hack_data[0].dir === 'out' && !hack_data[0].val);
+      this._rtc_io_pins(hack_data[1], hack_data[2]);
 
       // low priority io
 

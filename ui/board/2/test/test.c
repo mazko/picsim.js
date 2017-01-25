@@ -4,7 +4,7 @@
 
 */
 
-#define _XTAL_FREQ 25e4
+#define _XTAL_FREQ 1e6
 
 #include <xc.h>
 #include <stdbool.h>
@@ -18,7 +18,7 @@
 #include "rtc_r.c"
 
 
-#define DUTY_MAX 50
+#define DUTY_MAX 100
 
 static void _duty_cycle(
     const unsigned char value,
@@ -33,6 +33,7 @@ static void _duty_cycle(
 
 int main() {
 
+  // PORTA = PORTC = 0; // bug ?
   PORTA = TRISA = 0; // wow! http://stackoverflow.com/questions/19353686/
   PORTC = TRISC = 0;
 

@@ -67,6 +67,31 @@ public:
     return pic_set_pin_DOV(&pic, pin, value);
   }
 
+  // little hack to bypass embind 200ns bottleneck (1MHz->250000->50ms)
+  // https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/embind.html#performance
+
+  unsigned char em_hack_step_and_get(unsigned char pin1, unsigned char pin2, unsigned char pin3, unsigned char pin4) {
+    unsigned char result = 0,
+                  pins[4] = { pin1, pin2, pin3, pin4 };
+
+    this->step();
+
+    for (unsigned char i = 0; i < sizeof pins / sizeof pins[0]; i++) {
+      const unsigned char pin = pins[i];
+      if (pin > 0) {
+        if (this->get_pin_dir(pin) == PD_OUT) {
+          if (this->get_pin(pin)) {
+            result |= ((1 << sizeof pins) << i);
+          }
+        } else {
+          result |= (1 << i);
+        }
+      }
+    }
+
+    return result;
+  }
+
 private:
   _pic pic;
 };
@@ -106,5 +131,6 @@ EMSCRIPTEN_BINDINGS(picsim) {
       .function("get_pin_DOV", &PicSim::get_pin_DOV)
       .function("set_pin_DOV", &PicSim::set_pin_DOV)
 
+      .function("em_hack_step_and_get", &PicSim::em_hack_step_and_get)
       ;
 }
