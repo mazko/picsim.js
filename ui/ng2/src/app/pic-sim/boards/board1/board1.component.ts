@@ -206,7 +206,7 @@ export class Board1Component extends AbstractBoard implements OnInit {
             if (sim.get_pin(i + 6)) { PORTB_OUT[i]++; }
           }
         } else {
-          // RB4 select current display7 index  
+          // RB4 select current display7 index
           const display_idx = sim.get_pin(10 /* 6 + 4 */);
           for (let i = 0; i < SEGMENTS_1.length; i++) {
             const value = sim.get_pin(i < 4 ? i + 6 : i + 7);

@@ -12,14 +12,14 @@ enum SimStateEnum {
   STOPPING
 }
 
-/* 
-  That decorator makes it possible for Angular 
+/*
+  That decorator makes it possible for Angular
   to identify the types of its dependencies - ControllerService etc.
-  The PicSimComponent class had two dependencies 
-  as well but no @Injectable(). It didn't need 
-  @Injectable() because that component class has 
-  the @Component decorator. In Angular with TypeScript, 
-  a single decorator — any decorator — is sufficient 
+  The PicSimComponent class had two dependencies
+  as well but no @Injectable(). It didn't need
+  @Injectable() because that component class has
+  the @Component decorator. In Angular with TypeScript,
+  a single decorator — any decorator — is sufficient
   to identify dependency types.
 */
 

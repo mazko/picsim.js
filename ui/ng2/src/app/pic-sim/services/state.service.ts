@@ -48,7 +48,7 @@ export class StateService {
   private readonly stateSource = new Subject<StateType>();
   private readonly stateChanged$ = this.stateSource.asObservable();
 
-  // Angular2 template binding magic 
+  // Angular2 template binding magic
   // detects changes even inside getters
 
   @state_prop('board') currentBoardId: number;

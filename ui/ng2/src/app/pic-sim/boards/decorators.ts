@@ -10,7 +10,7 @@ export function ui_catcher(
 
   const originalMethod = descriptor.value; // save a reference to the original method
 
-  // NOTE: Do not use arrow syntax here. Use a function expression in 
+  // NOTE: Do not use arrow syntax here. Use a function expression in
   // order to use the correct value of `this` in this method (see notes below)
   descriptor.value = function(...args: any[]): Object {
     try {

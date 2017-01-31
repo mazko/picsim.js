@@ -242,7 +242,7 @@ const L_DID = 0x0010; // Sets cursor move direction
 const L_DSH = 0x0008; // specifies to shift the display
 
 const L_DON = 0x0004; // Sets On/Off of all display
-const L_CON = 0x0002; // Sets cursor On/Off 
+const L_CON = 0x0002; // Sets cursor On/Off
 const L_CBL = 0x0001; // Set blink of cursor position character
 
 
@@ -287,7 +287,7 @@ export class HD44780 {
     if ((lcd.ddram[cs + (40 * row)][left] & (0x01 << top)) && (lcd.flags & L_DON)) {
       return true;
     } else {
-      // cursor  
+      // cursor
       if ((lcd.flags & L_DON) && (lcd.flags & L_CON)) {
         let l: number, c: number;
         if (lcd.ddram_ad < 40) {
@@ -333,7 +333,7 @@ export class HD44780 {
     }
     lcd.ddram_ad = 0;
     lcd.cgram_ad = 0xFF;
-    // lcd.update = 1; 
+    // lcd.update = 1;
     lcd.bc = 0;
 
     lcd.blink = false;
@@ -375,7 +375,7 @@ export class HD44780 {
 
     // printf("LCD cmd=%#04X\n",(unsigned char)cmd);
 
-    // Set DDRAM address  
+    // Set DDRAM address
     if (cmd & 0x80 ) {
       const i = cmd & 0x7F;
 
@@ -450,7 +450,7 @@ export class HD44780 {
           }
         }
       } else {
-        // cursor move   
+        // cursor move
         lcd.flags &= ~L_CD;
         if (lcd.flags & L_LR) {
           lcd.ddram_ad++;
@@ -472,14 +472,14 @@ export class HD44780 {
         lcd.flags &= ~L_DON;
       }
 
-      // Sets cursor On/Off 
+      // Sets cursor On/Off
       if (cmd & 0x02) {
         lcd.flags |= L_CON;
       } else {
         lcd.flags &= ~L_CON;
       }
 
-      // Set blink of cursor position character    
+      // Set blink of cursor position character
       if (cmd & 0x01) {
         lcd.flags |= L_CBL;
       } else {
@@ -509,7 +509,7 @@ export class HD44780 {
       return;
     }
 
-    // Cursor home 
+    // Cursor home
     if (cmd & 0x02) {
       lcd.ddram_ad = 0;
       // lcd.update = 1;
@@ -593,7 +593,7 @@ export class HD44780 {
           }
         }
       }
-      // lcd.update=1; 
+      // lcd.update=1;
     } else {
       for (let j = 0; j < 5; j++) {
         if ((data & (0x01 << (4 - j))) > 0) {

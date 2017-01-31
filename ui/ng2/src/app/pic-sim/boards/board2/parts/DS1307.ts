@@ -129,7 +129,7 @@ export class DS1307 {
       rtc.datab = 0;
       rtc.ctrl = 0;
       rtc.ret = false;
-      // printf("rtc start!\n");  
+      // printf("rtc start!\n");
     }
 
     if ((rtc.sdao === 0) && (sda === 1) && (scl === 1) && (rtc.sclo === 1)) { // stop
@@ -137,10 +137,10 @@ export class DS1307 {
       rtc.byte = 0xFF;
       rtc.ctrl = 0;
       rtc.ret = false;
-      // printf("rtc stop!\n");   
+      // printf("rtc stop!\n");
     }
 
-    if ((rtc.bit < 9) && (rtc.sclo === 0) && (scl === 1)) { // data 
+    if ((rtc.bit < 9) && (rtc.sclo === 0) && (scl === 1)) { // data
       if (rtc.bit < 8) {
         rtc.datab |= (sda << (7 - rtc.bit));
       }
@@ -148,10 +148,10 @@ export class DS1307 {
       rtc.bit++;
     }
 
-    if ((rtc.bit < 9) && (rtc.sclo === 1) && (scl === 0 ) && (rtc.ctrl === 0x0D1)) { // data 
+    if ((rtc.bit < 9) && (rtc.sclo === 1) && (scl === 0 ) && (rtc.ctrl === 0x0D1)) { // data
       if (rtc.bit < 8) {
        rtc.ret = ((rtc.datas & (1 << (7 - rtc.bit))) > 0);
-       //// printf("send %i %i (%02X)\n",rtc->bit,rtc->ret,rtc->datas);  
+       //// printf("send %i %i (%02X)\n",rtc->bit,rtc->ret,rtc->datas);
       } else {
        rtc.ret = false;
       }
@@ -161,7 +161,7 @@ export class DS1307 {
        // printf("rtc data %02X\n",rtc->datab);
        if (rtc.byte === 0) {
          rtc.ctrl = rtc.datab;
-         // printf("rtc ctrl = %02X\n",rtc->ctrl);   
+         // printf("rtc ctrl = %02X\n",rtc->ctrl);
          rtc.ret = false;
          if ((rtc.ctrl & 0x01) === 0x00) {
              rtc.addr = ((rtc.ctrl & 0x0E) << 7);
@@ -174,7 +174,7 @@ export class DS1307 {
           }
 
           if (((rtc.byte > 1) && (rtc.ctrl & 0x01) === 0)) {
-            // printf("write rtc[%04X]=%02X\n",rtc->addr,rtc->datab); 
+            // printf("write rtc[%04X]=%02X\n",rtc->addr,rtc->datab);
             rtc.data[rtc.addr] = rtc.datab;
 
             switch (rtc.addr) {
@@ -209,7 +209,7 @@ export class DS1307 {
        } else if (rtc.ctrl === 0xD1) { // read
          if (rtc.byte < 16) {
            rtc.datas = rtc.data[rtc.addr];
-           // printf("read rtc[%04X]=%02X\n",rtc->addr,rtc->datas); 
+           // printf("read rtc[%04X]=%02X\n",rtc->addr,rtc->datas);
            rtc.addr++;
          } else {
            rtc.ctrl = 0xFF;

@@ -39,7 +39,7 @@ export class PicSimComponent {
 
   gistBtnEnabled: boolean;
 
-  // Angular2 template binding magic 
+  // Angular2 template binding magic
   // detects changes even inside getters
 
   get isRunning(): boolean {
