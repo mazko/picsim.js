@@ -20,28 +20,30 @@ class DS1307Model {
   bit = 0;
   byte = 0;
 
-  readonly dtime2: {
-    tm_sec: number,
-    tm_min: number,
-    tm_hour: number,
-    tm_wday: number,
-    tm_mday: number,
-    tm_mon: number,
-    tm_year: number
+  readonly dtime2 = {
+    tm_sec: 0,
+    tm_min: 0,
+    tm_hour: 0,
+    tm_wday: 0,
+    tm_mday: 0,
+    tm_mon: 0,
+    tm_year: 0
   };
 
   constructor() {
-    const jsDate = new Date(), dtime2 = {
-      tm_sec: jsDate.getSeconds(), /* 0-59 */
-      tm_min: jsDate.getMinutes(), /* 0-59 */
-      tm_hour: jsDate.getHours(),  /* 0-23 */
-      tm_wday: jsDate.getDay(),    /* 0-6  */
-      tm_mday: jsDate.getDate(),   /* 1-31 */
-      tm_mon: jsDate.getMonth(),   /* 0-11 */
-      tm_year: jsDate.getFullYear() - 1900
-    };
+    this.jsDate = new Date();
+  }
 
-    this.dtime2 = dtime2;
+  set jsDate(jsDate: Date) {
+    const dtime2 = this.dtime2;
+
+    dtime2.tm_sec = jsDate.getSeconds(); /* 0-59 */
+    dtime2.tm_min = jsDate.getMinutes(); /* 0-59 */
+    dtime2.tm_hour = jsDate.getHours();  /* 0-23 */
+    dtime2.tm_wday = jsDate.getDay();    /* 0-6  */
+    dtime2.tm_mday = jsDate.getDate();   /* 1-31 */
+    dtime2.tm_mon = jsDate.getMonth();   /* 0-11 */
+    dtime2.tm_year = jsDate.getFullYear() - 1900;
 
     this.data[0] = ((dtime2.tm_sec / 10) << 4) | (dtime2.tm_sec % 10);
     this.data[1] = ((dtime2.tm_min / 10) << 4) | (dtime2.tm_min % 10);
@@ -78,43 +80,15 @@ export class DS1307 {
 
     this._rtcc2++;
 
-    if (this._rtcc2 >= 10) {
+    if (this._rtcc2 >= 10) /* each second */ {
       this._rtcc2 = 0;
       if ((rtc.data[0] & 0x80) === 0) {
-        dtime2.tm_sec++;
-        if (dtime2.tm_sec === 60) {
-          dtime2.tm_sec = 0;
-          dtime2.tm_min++;
-        }
-        if (dtime2.tm_min === 60) {
-          dtime2.tm_min = 0;
-          dtime2.tm_hour++;
-        }
-        if (dtime2.tm_hour === 24) {
-          dtime2.tm_hour = 0;
-          dtime2.tm_mday++;
-          dtime2.tm_wday++;
-        }
-        if (dtime2.tm_wday === 7) {
-          dtime2.tm_wday = 0;
-        }
 
-        if (dtime2.tm_mday === 31) {
-          dtime2.tm_mday = 0;
-          dtime2.tm_mon++;
-        }
-        if (dtime2.tm_mon === 13) {
-          dtime2.tm_mon = 1;
-          dtime2.tm_year++;
-        }
+        // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date
 
-        rtc.data[0] = ((dtime2.tm_sec / 10) << 4) | (dtime2.tm_sec % 10);
-        rtc.data[1] = ((dtime2.tm_min / 10) << 4) | (dtime2.tm_min % 10);
-        rtc.data[2] = ((dtime2.tm_hour / 10) << 4) | (dtime2.tm_hour % 10);
-        rtc.data[3] = dtime2.tm_wday;
-        rtc.data[4] = ((dtime2.tm_mday / 10) << 4) | (dtime2.tm_mday % 10);
-        rtc.data[5] = (((dtime2.tm_mon + 1) / 10) << 4) | ((dtime2.tm_mon + 1) % 10);
-        rtc.data[6] = (((dtime2.tm_year % 100) / 10) << 4) | (dtime2.tm_year % 10);
+        rtc.jsDate = new Date(
+          dtime2.tm_year + 1900, dtime2.tm_mon, dtime2.tm_mday,
+          dtime2.tm_hour, dtime2.tm_min, dtime2.tm_sec + 1);
       }
     }
   }
