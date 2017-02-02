@@ -69,6 +69,7 @@ public:
 
   // little hack to bypass embind 200ns bottleneck (1MHz->250000->50ms)
   // https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/embind.html#performance
+  // some tests in ./test/
 
   unsigned char em_hack_step_and_get(unsigned char pin1, unsigned char pin2, unsigned char pin3, unsigned char pin4) {
     unsigned char result = 0,
