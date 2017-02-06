@@ -82,7 +82,7 @@ export class DS1307 {
 
     if (this._rtcc2 >= 10) /* each second */ {
       this._rtcc2 = 0;
-      if ((rtc.data[0] & 0x80) === 0) {
+      if ((rtc.data[0] & 0x80) === 0) /* CH bit (clock halt) */ {
 
         // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Date
 
